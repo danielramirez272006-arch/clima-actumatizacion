@@ -1,0 +1,325 @@
+{
+  "name": "Barry Outdoors - Webhook & DB Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "weather-evaluation",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 300],
+      "webhookId": "weather-evaluation"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=9.9981&longitude=-84.1169&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m",
+        "options": {}
+      },
+      "id": "2f4c9d2d-5c3b-4d6e-9g0b-2c3d4e5f6g7h",
+      "name": "HTTP Request - Open-Meteo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [420, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const current = $input.all()[0].json.current;\n\nconst temperature = current.temperature_2m;\nconst precipitation = current.precipitation;\nconst windSpeed = current.wind_speed_10m;\nconst humidity = current.relative_humidity_2m;\n\nlet recomendacion = \"Realizar\";\nlet riskLevel = \"Bajo\";\n\nif (temperature < 10 || temperature > 35 || precipitation > 2 || windSpeed > 30) {\n  recomendacion = \"Reprogramar\";\n  riskLevel = \"Crítico\";\n} else if ((temperature >= 10 && temperature <= 14) || (temperature >= 31 && temperature <= 35) || (precipitation >= 0.1 && precipitation <= 2) || (windSpeed >= 15 && windSpeed <= 30)) {\n  recomendacion = \"Precaución\";\n  riskLevel = \"Moderado\";\n}\n\nreturn {\n  recomendacion: recomendacion,\n  riskLevel: riskLevel,\n  temperature_2m: temperature,\n  precipitation: precipitation,\n  wind_speed_10m: windSpeed,\n  relative_humidity_2m: humidity\n};"
+      },
+      "id": "3g5d0e3e-6d4c-4e7f-0h1c-3d4e5f6g7h8i",
+      "name": "Code Node - Business Rules",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [640, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": [
+            {
+              "condition": "equal",
+              "leftValue": "={{ $json.recomendacion }}",
+              "rightValue": "Realizar"
+            },
+            {
+              "condition": "equal",
+              "leftValue": "={{ $json.recomendacion }}",
+              "rightValue": "Precaución"
+            },
+            {
+              "condition": "equal",
+              "leftValue": "={{ $json.recomendacion }}",
+              "rightValue": "Reprogramar"
+            }
+          ]
+        }
+      },
+      "id": "4h6e1f4f-7e5d-4f8g-1i2d-4e5f6g7h8i9j",
+      "name": "Switch - Routes",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [840, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "status",
+              "value": "{{ $json.recomendacion }}"
+            },
+            {
+              "name": "riskLevel",
+              "value": "{{ $json.riskLevel }}"
+            },
+            {
+              "name": "temperature",
+              "value": "{{ $json.temperature_2m }}"
+            },
+            {
+              "name": "precipitation",
+              "value": "{{ $json.precipitation }}"
+            },
+            {
+              "name": "windSpeed",
+              "value": "{{ $json.wind_speed_10m }}"
+            },
+            {
+              "name": "humidity",
+              "value": "{{ $json.relative_humidity_2m }}"
+            },
+            {
+              "name": "message",
+              "value": "Puede realizar la actividad sin restricciones"
+            }
+          ]
+        }
+      },
+      "id": "5i7f2g5g-8f6e-5g9h-2j3e-5f6g7h8i9j0k",
+      "name": "Set - Realizar",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [1060, 150]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "status",
+              "value": "{{ $json.recomendacion }}"
+            },
+            {
+              "name": "riskLevel",
+              "value": "{{ $json.riskLevel }}"
+            },
+            {
+              "name": "temperature",
+              "value": "{{ $json.temperature_2m }}"
+            },
+            {
+              "name": "precipitation",
+              "value": "{{ $json.precipitation }}"
+            },
+            {
+              "name": "windSpeed",
+              "value": "{{ $json.wind_speed_10m }}"
+            },
+            {
+              "name": "humidity",
+              "value": "{{ $json.relative_humidity_2m }}"
+            },
+            {
+              "name": "message",
+              "value": "Tome precauciones adicionales para realizar la actividad"
+            }
+          ]
+        }
+      },
+      "id": "6j8g3h6h-9g7f-6h0i-3k4f-6g7h8i9j0k1l",
+      "name": "Set - Precaución",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [1060, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "status",
+              "value": "{{ $json.recomendacion }}"
+            },
+            {
+              "name": "riskLevel",
+              "value": "{{ $json.riskLevel }}"
+            },
+            {
+              "name": "temperature",
+              "value": "{{ $json.temperature_2m }}"
+            },
+            {
+              "name": "precipitation",
+              "value": "{{ $json.precipitation }}"
+            },
+            {
+              "name": "windSpeed",
+              "value": "{{ $json.wind_speed_10m }}"
+            },
+            {
+              "name": "humidity",
+              "value": "{{ $json.relative_humidity_2m }}"
+            },
+            {
+              "name": "message",
+              "value": "Se recomienda reprogramar la actividad por condiciones climáticas adversas"
+            }
+          ]
+        }
+      },
+      "id": "7k9h4i7i-0h8g-7i1j-4l5g-7h8i9j0k1l2m",
+      "name": "Set - Reprogramar",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [1060, 450]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3001/evaluations",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"locationName\": \"San José, Costa Rica\",\n  \"status\": \"{{ $json.status }}\",\n  \"riskLevel\": \"{{ $json.riskLevel }}\",\n  \"temperature\": {{ $json.temperature }},\n  \"precipitation\": {{ $json.precipitation }},\n  \"windSpeed\": {{ $json.windSpeed }},\n  \"humidity\": {{ $json.humidity }},\n  \"message\": \"{{ $json.message }}\",\n  \"timestamp\": \"{{ $now.toISO() }}\",\n  \"source\": \"n8n_automation\"\n}",
+        "options": {
+          "neverError": true
+        }
+      },
+      "id": "8l0i5j8j-1i9h-8j2k-5m6h-8i9j0k1l2m3n",
+      "name": "Save to JSON-Server DB",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1300, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"{{ $('Switch - Routes').item.json.recomendacion }}\",\n  \"riskLevel\": \"{{ $('Switch - Routes').item.json.riskLevel }}\",\n  \"temperature\": {{ $('Switch - Routes').item.json.temperature_2m }},\n  \"precipitation\": {{ $('Switch - Routes').item.json.precipitation }},\n  \"windSpeed\": {{ $('Switch - Routes').item.json.wind_speed_10m }},\n  \"humidity\": {{ $('Switch - Routes').item.json.relative_humidity_2m }},\n  \"savedInDb\": true,\n  \"timestamp\": \"{{ $now.toISO() }}\"\n}",
+        "options": {}
+      },
+      "id": "9m1j6k9k-2j0i-9k3l-6n7i-9j0k1l2m3n4o",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1520, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request - Open-Meteo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request - Open-Meteo": {
+      "main": [
+        [
+          {
+            "node": "Code Node - Business Rules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Node - Business Rules": {
+      "main": [
+        [
+          {
+            "node": "Switch - Routes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch - Routes": {
+      "main": [
+        [
+          {
+            "node": "Set - Realizar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set - Precaución",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set - Reprogramar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set - Realizar": {
+      "main": [
+        [
+          {
+            "node": "Save to JSON-Server DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set - Precaución": {
+      "main": [
+        [
+          {
+            "node": "Save to JSON-Server DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set - Reprogramar": {
+      "main": [
+        [
+          {
+            "node": "Save to JSON-Server DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to JSON-Server DB": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,182 @@
+{
+  "locations": [
+    {
+      "id": "loc-1",
+      "name": "San José (Base Central)",
+      "country": "Costa Rica",
+      "latitude": 9.9981,
+      "longitude": -84.1169,
+      "elevation": 1172,
+      "active": true
+    },
+    {
+      "id": "loc-2",
+      "name": "Volcán Irazú",
+      "country": "Costa Rica",
+      "latitude": 9.9792,
+      "longitude": -83.8528,
+      "elevation": 3432,
+      "active": true
+    },
+    {
+      "id": "loc-3",
+      "name": "Parque Nacional Manuel Antonio",
+      "country": "Costa Rica",
+      "latitude": 9.3803,
+      "longitude": -84.1432,
+      "elevation": 20,
+      "active": true
+    },
+    {
+      "id": "loc-4",
+      "name": "Cerro Chirripó",
+      "country": "Costa Rica",
+      "latitude": 9.4842,
+      "longitude": -83.4886,
+      "elevation": 3820,
+      "active": true
+    }
+  ],
+  "activities": [
+    {
+      "id": "act-101",
+      "title": "Trekking al Mirador del Irazú",
+      "type": "trekking",
+      "locationId": "loc-2",
+      "locationName": "Volcán Irazú",
+      "date": "2026-09-12",
+      "time": "07:00",
+      "guideName": "Carlos Mendoza",
+      "participantsCount": 14,
+      "currentRecommendation": "Precaución",
+      "status": "pending_confirmation"
+    },
+    {
+      "id": "act-102",
+      "title": "Kayak Costero en Manuel Antonio",
+      "type": "kayak",
+      "locationId": "loc-3",
+      "locationName": "Parque Nacional Manuel Antonio",
+      "date": "2026-09-13",
+      "time": "08:30",
+      "guideName": "Valeria Castro",
+      "participantsCount": 8,
+      "currentRecommendation": "Realizar",
+      "status": "confirmed"
+    },
+    {
+      "id": "act-103",
+      "title": "Expedición Cumbre Chirripó (Alta Montaña)",
+      "type": "trekking",
+      "locationId": "loc-4",
+      "locationName": "Cerro Chirripó",
+      "date": "2026-09-14",
+      "time": "05:00",
+      "guideName": "Esteban Alvarado",
+      "participantsCount": 6,
+      "currentRecommendation": "Reprogramar",
+      "status": "alert_triggered"
+    },
+    {
+      "id": "act-104",
+      "title": "Campamento Base San José - Valle",
+      "type": "camping",
+      "locationId": "loc-1",
+      "locationName": "San José (Base Central)",
+      "date": "2026-09-15",
+      "time": "18:00",
+      "guideName": "Ana Morales",
+      "participantsCount": 18,
+      "currentRecommendation": "Realizar",
+      "status": "confirmed"
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "eval-001",
+      "locationId": "loc-1",
+      "locationName": "San José, Costa Rica",
+      "latitude": 9.9981,
+      "longitude": -84.1169,
+      "timestamp": "2026-09-10T14:00:00Z",
+      "metrics": {
+        "temperature_2m": 22.4,
+        "relative_humidity_2m": 78,
+        "precipitation": 0.0,
+        "wind_speed_10m": 12.6
+      },
+      "riskScore": 15,
+      "riskLevel": "Bajo",
+      "recommendation": "Realizar",
+      "processedByN8N": false
+    },
+    {
+      "id": "eval-002",
+      "locationId": "loc-4",
+      "locationName": "Cerro Chirripó",
+      "latitude": 9.4842,
+      "longitude": -83.4886,
+      "timestamp": "2026-09-10T14:00:00Z",
+      "metrics": {
+        "temperature_2m": 6.2,
+        "relative_humidity_2m": 95,
+        "precipitation": 4.8,
+        "wind_speed_10m": 38.5
+      },
+      "riskScore": 88,
+      "riskLevel": "Crítico",
+      "recommendation": "Reprogramar",
+      "processedByN8N": true
+    }
+  ],
+  "alerts": [
+    {
+      "id": "alt-501",
+      "activityId": "act-103",
+      "severity": "CRITICAL",
+      "recommendation": "Reprogramar",
+      "title": "Alerta de Tormenta y Viento Extremo en Cerro Chirripó",
+      "message": "Condiciones meteorológicas no aptas (Viento: 38.5 km/h, Lluvia: 4.8 mm, Temp: 6.2°C). Notificación automática disparada a guías y clientes.",
+      "channel": "whatsapp_telegram_email",
+      "sentAt": "2026-09-10T14:02:00Z",
+      "status": "delivered"
+    },
+    {
+      "id": "alt-502",
+      "activityId": "act-101",
+      "severity": "WARNING",
+      "recommendation": "Precaución",
+      "title": "Monitoreo Preventivo en Volcán Irazú",
+      "message": "Probabilidad de llovizna moderada. Se solicita equipo impermeable para todos los participantes.",
+      "channel": "email",
+      "sentAt": "2026-09-10T14:02:15Z",
+      "status": "queued"
+    }
+  ],
+  "participants": [
+    {
+      "id": "usr-01",
+      "name": "Alejandro Rojas",
+      "email": "alejandro.rojas@barryoutdoors.com",
+      "phone": "+50688991122",
+      "role": "Organizador",
+      "activityId": "act-103"
+    },
+    {
+      "id": "usr-02",
+      "name": "Mariana Gómez",
+      "email": "mariana.gomez@example.com",
+      "phone": "+50677112233",
+      "role": "Cliente",
+      "activityId": "act-103"
+    },
+    {
+      "id": "usr-03",
+      "name": "Daniel Quesada",
+      "email": "daniel.quesada@example.com",
+      "phone": "+50666554433",
+      "role": "Cliente",
+      "activityId": "act-101"
+    }
+  ]
+}

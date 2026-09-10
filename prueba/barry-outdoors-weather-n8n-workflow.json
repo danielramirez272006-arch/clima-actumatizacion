@@ -1,0 +1,222 @@
+{
+  "name": "Barry Outdoors - Weather Risk Evaluation",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "1e3b8e1c-4b2a-4c5d-8f9a-1b2c3d4e5f6g",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=9.9981&longitude=-84.1169&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m",
+        "options": {}
+      },
+      "id": "2f4c9d2d-5c3b-4d6e-9g0b-2c3d4e5f6g7h",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const current = $input.all()[0].json.current;\n\nconst temperature = current.temperature_2m;\nconst precipitation = current.precipitation;\nconst windSpeed = current.wind_speed_10m;\n\nlet recomendacion = \"Realizar\";\n\nif (temperature < 10 || temperature > 35 || precipitation > 2 || windSpeed > 30) {\n  recomendacion = \"Reprogramar\";\n} else if ((temperature >= 10 && temperature <= 14) || (temperature >= 31 && temperature <= 35) || (precipitation >= 0.1 && precipitation <= 2) || (windSpeed >= 15 && windSpeed <= 30)) {\n  recomendacion = \"Precaución\";\n}\n\nreturn {\n  recomendacion: recomendacion,\n  temperature_2m: temperature,\n  precipitation: precipitation,\n  wind_speed_10m: windSpeed\n};"
+      },
+      "id": "3g5d0e3e-6d4c-4e7f-0h1c-3d4e5f6g7h8i",
+      "name": "Code Node - Business Rules",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": [
+            {
+              "condition": "equal",
+              "leftValue": "={{ $json.recomendacion }}",
+              "rightValue": "Realizar"
+            },
+            {
+              "condition": "equal",
+              "leftValue": "={{ $json.recomendacion }}",
+              "rightValue": "Precaución"
+            },
+            {
+              "condition": "equal",
+              "leftValue": "={{ $json.recomendacion }}",
+              "rightValue": "Reprogramar"
+            }
+          ]
+        }
+      },
+      "id": "4h6e1f4f-7e5d-4f8g-1i2d-4e5f6g7h8i9j",
+      "name": "Switch - Routes",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "status",
+              "value": "{{ $json.recomendacion }}"
+            },
+            {
+              "name": "temperature",
+              "value": "{{ $json.temperature_2m }}"
+            },
+            {
+              "name": "precipitation",
+              "value": "{{ $json.precipitation }}"
+            },
+            {
+              "name": "windSpeed",
+              "value": "{{ $json.wind_speed_10m }}"
+            },
+            {
+              "name": "message",
+              "value": "Puede realizar la actividad sin restricciones"
+            }
+          ]
+        }
+      },
+      "id": "5i7f2g5g-8f6e-5g9h-2j3e-5f6g7h8i9j0k",
+      "name": "Set - Realizar",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [1050, 150]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "status",
+              "value": "{{ $json.recomendacion }}"
+            },
+            {
+              "name": "temperature",
+              "value": "{{ $json.temperature_2m }}"
+            },
+            {
+              "name": "precipitation",
+              "value": "{{ $json.precipitation }}"
+            },
+            {
+              "name": "windSpeed",
+              "value": "{{ $json.wind_speed_10m }}"
+            },
+            {
+              "name": "message",
+              "value": "Tome precauciones adicionales para realizar la actividad"
+            }
+          ]
+        }
+      },
+      "id": "6j8g3h6h-9g7f-6h0i-3k4f-6g7h8i9j0k1l",
+      "name": "Set - Precaución",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "status",
+              "value": "{{ $json.recomendacion }}"
+            },
+            {
+              "name": "temperature",
+              "value": "{{ $json.temperature_2m }}"
+            },
+            {
+              "name": "precipitation",
+              "value": "{{ $json.precipitation }}"
+            },
+            {
+              "name": "windSpeed",
+              "value": "{{ $json.wind_speed_10m }}"
+            },
+            {
+              "name": "message",
+              "value": "Se recomienda reprogramar la actividad por condiciones climáticas adversas"
+            }
+          ]
+        }
+      },
+      "id": "7k9h4i7i-0h8g-7i1j-4l5g-7h8i9j0k1l2m",
+      "name": "Set - Reprogramar",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [1050, 450]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code Node - Business Rules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Node - Business Rules": {
+      "main": [
+        [
+          {
+            "node": "Switch - Routes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch - Routes": {
+      "main": [
+        [
+          {
+            "node": "Set - Realizar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set - Precaución",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set - Reprogramar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
